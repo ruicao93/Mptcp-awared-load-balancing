@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1482158467138
+Bnd-LastModified: 1482212142728
 Build-Jdk: 1.8.0_101
 Built-By: cr
 Bundle-Description: Mptcp awared load balancing application
@@ -9,4 +9,20 @@ Bundle-Name: mptcp-load-balancing
 Bundle-SymbolicName: org.onosproject.mptcp-load-balancing
 Bundle-Version: 1.8.0
 Created-By: Apache Maven Bundle Plugin
+Export-Package: 
+ org.onosproject.mptcp;uses:="org.onlab.packet,org.onosproject.net,org.o
+ nosproject.net.flow";version="1.8.0",
+ org.onosproject.mptcp.Impl;uses:="org.onlab.packet,org.onosproject.mptc
+ p,org.onosproject.net";version="1.8.0"
+Import-Package: 
+ org.onlab.packet;version="[1.8,2)",
+ org.onosproject.mptcp,
+ org.onosproject.net;version="[1.8,2)",
+ org.onosproject.net.flow;version="[1.8,2)",
+ org.onosproject.net.packet;version="[1.8,2)",
+ org.slf4j;version="[1.7,2)"
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"
+Service-Component: OSGI-INF/org.onosproject.mptcp.Impl.MptcpConnectionMa
+ nager.xml,OSGI-INF/org.onosproject.mptcp.Impl.MptcpAwaredLoadBalancer.x
+ ml,OSGI-INF/org.onosproject.mptcp.Impl.LoadBalancePathManager.xml
 Tool: Bnd-3.2.0.201605172007

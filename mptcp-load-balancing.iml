@@ -4,7 +4,7 @@
     <facet type="Osmorc" name="OSGi">
       <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="mptcp-load-balancing-1.8.0.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="" bundleSymbolicName="org.onosproject.mptcp-load-balancing" bundleVersion="1.8.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
-          <property key="Bundle-Description" value="Reactive forwarding application using flow subsystem" />
+          <property key="Bundle-Description" value="Mptcp awared load balancing application" />
           <property key="Bundle-Name" value="mptcp-load-balancing" />
         </additionalProperties>
         <additionalJARContents />
