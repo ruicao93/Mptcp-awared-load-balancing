@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>onos-apps</artifactId>
+        <groupId>org.onosproject</groupId>
+        <version>1.8.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>mptcp-load-balancing</artifactId>
+    <packaging>bundle</packaging>
+
+    <description>Mptcp awared load balancing application</description>
+
+    <properties>
+        <onos.app.name>org.onosproject.loadbalance</onos.app.name>
+        <onos.app.title>Mptcp awared load balancing  App</onos.app.title>
+        <onos.app.category>Traffic Engeneering</onos.app.category>
+        <onos.app.url>http://www.fnlab.org</onos.app.url>
+        <onos.app.readme>Reactive forwarding application using flow subsystem.</onos.app.readme>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

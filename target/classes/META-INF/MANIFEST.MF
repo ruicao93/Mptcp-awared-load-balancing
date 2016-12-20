@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bnd-LastModified: 1482158467138
+Build-Jdk: 1.8.0_101
+Built-By: cr
+Bundle-Description: Mptcp awared load balancing application
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
+Bundle-ManifestVersion: 2
+Bundle-Name: mptcp-load-balancing
+Bundle-SymbolicName: org.onosproject.mptcp-load-balancing
+Bundle-Version: 1.8.0
+Created-By: Apache Maven Bundle Plugin
+Tool: Bnd-3.2.0.201605172007
