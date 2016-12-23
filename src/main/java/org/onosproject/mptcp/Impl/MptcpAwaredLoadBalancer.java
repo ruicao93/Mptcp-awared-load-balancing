@@ -296,7 +296,6 @@ public class MptcpAwaredLoadBalancer {
             ipSourcePort = TpPort.tpPort(udpPacket.getSourcePort());
             ipDestinationPort = TpPort.tpPort(udpPacket.getDestinationPort());
         }
-
         // if srcHost and dstHost on a switch
         if (srcHostLocation.deviceId().equals(dstHostLocation.deviceId())) {
             TrafficSelector.Builder selectorBuilder = DefaultTrafficSelector.builder();
