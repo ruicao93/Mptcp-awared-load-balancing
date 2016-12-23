@@ -1,5 +1,7 @@
 package org.onosproject.mptcp;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 /**
@@ -17,6 +19,17 @@ public class MptcpKey {
         return key;
     }
 
+    public MptcpToken toToken() {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            byte[] sha1 = md.digest(key);
+            byte[] token = Arrays.copyOfRange(sha1, 0, 4);
+            return new MptcpToken(token);
+        } catch (NoSuchAlgorithmException e) {
+            return null;
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -31,5 +44,12 @@ public class MptcpKey {
     @Override
     public int hashCode() {
         return Arrays.hashCode(key);
+    }
+
+    @Override
+    public String toString() {
+        return "MptcpKey{" +
+                "key=" + Arrays.toString(key) +
+                '}';
     }
 }

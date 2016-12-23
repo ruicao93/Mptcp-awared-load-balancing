@@ -66,6 +66,18 @@ public class MptcpConnection {
         this.primaryDestinationPort = primaryDestinationPort;
     }
 
+    public void setToken(MptcpToken token) {
+        this.token = token;
+    }
+
+    public void setSenderKey(MptcpKey senderKey) {
+        this.senderKey = senderKey;
+    }
+
+    public void setReceiverKey(MptcpKey receiverKey) {
+        this.receiverKey = receiverKey;
+    }
+
     public MptcpToken getToken() {
         return token;
     }
@@ -138,5 +150,21 @@ public class MptcpConnection {
         result = 31 * result + (lastHopFlowId != null ? lastHopFlowId.hashCode() : 0);
         result = 31 * result + (subFlows != null ? subFlows.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "MptcpConnection{" +
+                "primarySourceIp=" + primarySourceIp +
+                ", primaryDestinationIp=" + primaryDestinationIp +
+                ", primarySourcePort=" + primarySourcePort +
+                ", primaryDestinationPort=" + primaryDestinationPort +
+                ", token=" + token +
+                ", senderKey=" + senderKey +
+                ", receiverKey=" + receiverKey +
+                ", allocatePath=" + allocatePath +
+                ", lastHopFlowId=" + lastHopFlowId +
+                ", subFlows=" + subFlows +
+                '}';
     }
 }

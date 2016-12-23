@@ -7,7 +7,7 @@ import java.util.Arrays;
  */
 public class MptcpOption {
 
-    public static final byte MPTCP_ENABLE = 0x30;
+    public static final byte MPTCP_ENABLE = 0x1e;
     public static final byte MPTCP_CAPABLE = 0x00;
     public static final byte MPTCP_JOIN = 0x01;
 
@@ -24,34 +24,76 @@ public class MptcpOption {
 
 
     private MptcpOption(byte[] options) {
-        this.options = Arrays.copyOf(options, options.length);
+        if (null != options && options.length > 0) {
+            this.options = Arrays.copyOf(options, options.length);
+        } else {
+            this.options = new byte[0];
+        }
+
     }
 
     public static MptcpOption parse(byte[] options) {
         MptcpOption mptcpOption = new MptcpOption(options);
         mptcpOption.parse();
-        return null;
+        return mptcpOption;
     }
 
     private void parse() {
-        if (options.length > 20) {
-            mptcpCapable = true;
+        parseOptions(0);
+    }
+
+    public void parseOptions(int index) {
+        if (index >= options.length) return;
+        int kind = options[0 + index];
+        switch (kind) {
+            case MPTCP_ENABLE:
+                parseMptcpOption(index);
+                break;
+            case 0:
+                parseNopOption(index);
+                break;
+            case 1:
+                parseEndOption(index);
+                break;
+            default:
+                parseOtherOption(index);
+
         }
-        kind = options[20];
-        mptcpEnbaled = kind == MPTCP_ENABLE;
-        subType = options[22];
+    }
+
+    public void parseOtherOption(int index) {
+        int kind = options[0 + index];
+        int length = options[1 + index];
+        parseOptions(index + length);
+    }
+
+    public void parseNopOption(int index) {
+        parseOptions(index + 1);
+    }
+
+    public void parseEndOption(int index) {
+        parseOptions(index + 1);
+    }
+
+    public void parseMptcpOption(int index) {
+        int kind = options[0 + index];
+        int length = options[1 + index];
+        if (kind == MPTCP_ENABLE) {
+            this.mptcpEnbaled = true;
+        }
+        byte subType = (byte) (options[index + 2] >> 4);
         if (subType == MPTCP_CAPABLE) {
-            mptcpCapable = true;
+            this.mptcpCapable = true;
         } else if (subType == MPTCP_JOIN) {
             mptcpJoin = true;
         }
-        if (!isMptcpEnabled()) return;
         if (hasMptcpCapable()) {
-            senderKey = Arrays.copyOfRange(options, 24, 32);
+            senderKey = Arrays.copyOfRange(options, index + 4, index + 12);
         }
         if (hasMptcpJoin()) {
-            token = Arrays.copyOfRange(options, 24, 28);
+            token = Arrays.copyOfRange(options, index + 4, index + 8);
         }
+        parseOptions(index + length);
     }
 
     public boolean isMptcpEnabled() {
@@ -67,11 +109,11 @@ public class MptcpOption {
     }
 
     public byte[] getKey() {
-        return new byte[0];
+        return senderKey;
     }
 
     public byte[] getToken() {
-        return new byte[0];
+        return token;
     }
 
     public void setMptcpEnbaled(boolean mptcpEnbaled) {

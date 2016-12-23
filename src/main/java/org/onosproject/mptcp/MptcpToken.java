@@ -31,4 +31,11 @@ public class MptcpToken {
     public int hashCode() {
         return Arrays.hashCode(token);
     }
+
+    @Override
+    public String toString() {
+        return "MptcpToken{" +
+                "token=" + Arrays.toString(token) +
+                '}';
+    }
 }

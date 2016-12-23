@@ -1,13 +1,14 @@
 package org.onosproject.mptcp;
 
 import org.onlab.packet.IpAddress;
+import org.onosproject.net.Path;
 
 /**
  * Created by cr on 16-12-20.
  */
 public class MptcpSubFlow {
 
-    private MptcpConnection pareMptcpConnection;
+    private MptcpToken pareMptcpConnectionToken;
 
     private IpAddress sourceIp;
     private IpAddress destinationIp;
@@ -15,20 +16,22 @@ public class MptcpSubFlow {
     private int sourcePort;
     private int destinationPort;
 
-    public MptcpSubFlow(MptcpConnection pareMptcpConnection, IpAddress sourceIp, IpAddress destinationIp, int sourcePort, int destinationPort) {
-        this.pareMptcpConnection = pareMptcpConnection;
+    private Path path;
+
+    public MptcpSubFlow(MptcpToken pareMptcpConnectionToken, IpAddress sourceIp, IpAddress destinationIp, int sourcePort, int destinationPort) {
+        this.pareMptcpConnectionToken = pareMptcpConnectionToken;
         this.sourceIp = sourceIp;
         this.destinationIp = destinationIp;
         this.sourcePort = sourcePort;
         this.destinationPort = destinationPort;
     }
 
-    public MptcpConnection getPareMptcpConnection() {
-        return pareMptcpConnection;
+    public MptcpToken getPareMptcpConnectionToken() {
+        return pareMptcpConnectionToken;
     }
 
-    public void setPareMptcpConnection(MptcpConnection pareMptcpConnection) {
-        this.pareMptcpConnection = pareMptcpConnection;
+    public void setPareMptcpConnectionToken(MptcpToken pareMptcpConnectionToken) {
+        this.pareMptcpConnectionToken = pareMptcpConnectionToken;
     }
 
     public IpAddress getSourceIp() {
@@ -63,6 +66,27 @@ public class MptcpSubFlow {
         this.destinationPort = destinationPort;
     }
 
+
+    public Path getPath() {
+        return path;
+    }
+
+    public void setPath(Path path) {
+        this.path = path;
+    }
+
+    @Override
+    public String toString() {
+        return "MptcpSubFlow{" +
+                "pareMptcpConnectionToken=" + pareMptcpConnectionToken +
+                ", sourceIp=" + sourceIp +
+                ", destinationIp=" + destinationIp +
+                ", sourcePort=" + sourcePort +
+                ", destinationPort=" + destinationPort +
+                ", path=" + path +
+                '}';
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -72,20 +96,24 @@ public class MptcpSubFlow {
 
         if (sourcePort != that.sourcePort) return false;
         if (destinationPort != that.destinationPort) return false;
-        if (pareMptcpConnection != null ? !pareMptcpConnection.equals(that.pareMptcpConnection) : that.pareMptcpConnection != null)
+        if (pareMptcpConnectionToken != null ? !pareMptcpConnectionToken.equals(that.pareMptcpConnectionToken) : that.pareMptcpConnectionToken != null)
             return false;
         if (sourceIp != null ? !sourceIp.equals(that.sourceIp) : that.sourceIp != null) return false;
-        return destinationIp != null ? destinationIp.equals(that.destinationIp) : that.destinationIp == null;
+        if (destinationIp != null ? !destinationIp.equals(that.destinationIp) : that.destinationIp != null)
+            return false;
+        return path != null ? path.equals(that.path) : that.path == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = pareMptcpConnection != null ? pareMptcpConnection.hashCode() : 0;
+        int result = pareMptcpConnectionToken != null ? pareMptcpConnectionToken.hashCode() : 0;
         result = 31 * result + (sourceIp != null ? sourceIp.hashCode() : 0);
         result = 31 * result + (destinationIp != null ? destinationIp.hashCode() : 0);
         result = 31 * result + sourcePort;
         result = 31 * result + destinationPort;
+        result = 31 * result + (path != null ? path.hashCode() : 0);
         return result;
     }
+
 }
