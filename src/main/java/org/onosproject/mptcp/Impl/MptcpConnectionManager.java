@@ -58,6 +58,12 @@ public class MptcpConnectionManager implements MptcpConnectionService {
     }
 
     @Override
+    public void clearMptcpConnections() {
+        connectionMap.clear();
+        connectionHelperMap.clear();
+    }
+
+    @Override
     public MptcpConnection getMptcpConnectionByToken(MptcpToken token) {
         return connectionMap.get(token);
     }

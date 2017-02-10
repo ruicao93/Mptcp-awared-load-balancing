@@ -9,6 +9,7 @@ import org.onosproject.net.Path;
 public interface MptcpConnectionService {
     void addMptcpConnection(MptcpToken token, MptcpConnection mptcpConnection);
     Iterable<MptcpConnection> getMptcpConnections();
+    void clearMptcpConnections();
     MptcpConnection getMptcpConnectionByToken(MptcpToken token);
     void allocatePath(MptcpToken token, Path path);
     void allocateHandShakePath(IpAddress srcIp, IpAddress dstIp, int srcPort, int dstPort, Path path);

@@ -25,4 +25,9 @@
             <action class="org.onosproject.mptcp.cli.MptcpHandshakeConnectionListCommand"/>
         </command>
     </command-bundle>
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.1.0">
+        <command>
+            <action class="org.onosproject.mptcp.cli.MptcpConnectionListClearCommand"/>
+        </command>
+    </command-bundle>
 </blueprint>
