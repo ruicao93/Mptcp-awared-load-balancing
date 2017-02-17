@@ -166,7 +166,7 @@ public class MptcpAwaredLoadBalancer {
                     mptcpConnection = mptcpConnectionService.getMptcpConnectionByToken(mptcpToken);
                     if (null != mptcpConnection) {
                         //packetOut(dstHost.location(), ethPkt);
-                        log.info("Token has exist....");
+                        log.info("Token has exist....{}:{},{}:{}",dstIp.toString(), dstPort, srcIp.toString(), srcPort);
                         return;
                     }
                     mptcpConnection = mptcpConnectionService.getHandshakeConnection(dstIp, srcIp, dstPort, srcPort);
@@ -181,7 +181,7 @@ public class MptcpAwaredLoadBalancer {
                     //Path path = loadBalancePathService.getOptimalPath(srcHost.location(), dstHost.location());
                     //installRulesAlongPath(context, srcHost.location(), dstHost.location(), path);
                     Path path =mptcpConnection.getAllocatePath();
-                    // Reverce path first
+                    // Reverse path first
                     if (null != path) {
                         path = reversePathAndInternalLinks(path);
                     }
@@ -198,7 +198,7 @@ public class MptcpAwaredLoadBalancer {
 
             } else if (mptcpOption.hasMptcpJoin()) {
                 // 2.2 Join
-                log.info("Mptcp join.");
+                log.info("Mptcp join.SYN: {}, ACK:{}.", hasSYN(tcpPacket.getFlags()), hasACK(tcpPacket.getFlags()));
                 if (!hasSYN(tcpPacket.getFlags()) || hasACK(tcpPacket.getFlags())) {
                     //TODO
                     log.info("Mptcp join no SYN or contains ACK");
@@ -221,6 +221,9 @@ public class MptcpAwaredLoadBalancer {
                 // TODO: find path for subflow and install rule
                 Path path = loadBalancePathService.getOptimalPath(srcHost.location().deviceId(), dstHost.location().deviceId(), token);
                 installRulesAlongPath(context, srcHost.location(), dstHost.location(), path);
+//                installRulesAlongUndirectionalPath(context, srcHost.location(), dstHost.location(), path);
+//                Path reversePath = reversePathAndInternalLinks(path);
+//                installRulesAlongUndirectionalPath(context, dstHost.location(),  srcHost.location(),reversePath);
                 subFlow.setPath(path);
                 log.info("Establish  subflow ......");
                 // packet Out to dst point
@@ -252,6 +255,7 @@ public class MptcpAwaredLoadBalancer {
                     .build();
             linkListNew.add(newLink);
         }
+        Collections.reverse(linkListNew);
         Path newPath = new DefaultPath(providerId, linkListNew, path.cost(), path.annotations());
         return newPath;
     }
@@ -379,13 +383,13 @@ public class MptcpAwaredLoadBalancer {
                 }
                 // build selector
                 selectorBuilder.matchInPort(link.dst().port());
-                selectorBuilder2.matchInPort(link.src().port());
+                selectorBuilder2.matchInPort(rightLink.src().port());
                 // build treatment
                 TrafficTreatment treatment = DefaultTrafficTreatment.builder()
                         .setOutput(rightLink.src().port())
                         .build();
                 TrafficTreatment treatment2 = DefaultTrafficTreatment.builder()
-                        .setOutput(rightLink.dst().port())
+                        .setOutput(link.dst().port())
                         .build();
                 ForwardingObjective forwardingObjective = DefaultForwardingObjective.builder()
                         .withSelector(selectorBuilder.build())
@@ -404,7 +408,7 @@ public class MptcpAwaredLoadBalancer {
                         .makeTemporary(flowTimeout)
                         .add();
                 flowObjectiveService.forward(link.dst().deviceId(), forwardingObjective);
-                flowObjectiveService.forward(link.src().deviceId(), forwardingObjective2);
+                flowObjectiveService.forward(link.dst().deviceId(), forwardingObjective2);
             }
             if (link.src().equals(path.src())) {
                 //    1.1 if the link is on the head, (srcHostLocation. link.src.port)
@@ -419,7 +423,7 @@ public class MptcpAwaredLoadBalancer {
                         .matchIPSrc(matchIp4DstPrefix)
                         .matchIPDst(matchIp4SrcPrefix)
                         .matchIPProtocol(ipv4Protocol)
-                        .matchInPort(srcHostLocation.port());
+                        .matchInPort(link.src().port());
                 if (ipv4Protocol == IPv4.PROTOCOL_TCP) {
                     selectorBuilderHead.matchTcpSrc(ipSourcePort)
                             .matchTcpDst(ipDestinationPort);
@@ -444,7 +448,7 @@ public class MptcpAwaredLoadBalancer {
                         .add();
                 flowObjectiveService.forward(link.src().deviceId(), forwardingObjectiveHead);
                 TrafficTreatment treatmentHead2 = DefaultTrafficTreatment.builder()
-                        .setOutput(link.dst().port())
+                        .setOutput(srcHostLocation.port())
                         .build();
                 ForwardingObjective forwardingObjectiveHead2 = DefaultForwardingObjective.builder()
                         .withSelector(selectorBuilderHead2.build())
@@ -454,7 +458,7 @@ public class MptcpAwaredLoadBalancer {
                         .fromApp(appId)
                         .makeTemporary(flowTimeout)
                         .add();
-                flowObjectiveService.forward(link.dst().deviceId(), forwardingObjectiveHead2);
+                flowObjectiveService.forward(link.src().deviceId(), forwardingObjectiveHead2);
             }
             if (link.dst().equals(path.dst())) {
                 TrafficSelector.Builder selectorBuilderTail = DefaultTrafficSelector.builder();
@@ -468,13 +472,13 @@ public class MptcpAwaredLoadBalancer {
                         .matchIPSrc(matchIp4DstPrefix)
                         .matchIPDst(matchIp4SrcPrefix)
                         .matchIPProtocol(ipv4Protocol)
-                        .matchInPort(link.src().port());
+                        .matchInPort(dstHostLocation.port());
                 // build treatment
                 TrafficTreatment treatmentTail = DefaultTrafficTreatment.builder()
                         .setOutput(dstHostLocation.port())
                         .build();
                 TrafficTreatment treatmentTail2 = DefaultTrafficTreatment.builder()
-                        .setOutput(srcHostLocation.port())
+                        .setOutput(link.dst().port())
                         .build();
                 if (ipv4Protocol == IPv4.PROTOCOL_TCP) {
                     selectorBuilderTail.matchTcpSrc(ipSourcePort)
@@ -504,7 +508,7 @@ public class MptcpAwaredLoadBalancer {
                         .fromApp(appId)
                         .makeTemporary(flowTimeout)
                         .add();
-                flowObjectiveService.forward(link.src().deviceId(), forwardingObjective2);
+                flowObjectiveService.forward(link.dst().deviceId(), forwardingObjective2);
             }
             rightLink = link;
         }

@@ -6,6 +6,7 @@
         <additionalProperties>
           <property key="Bundle-Description" value="Mptcp awared load balancing application" />
           <property key="Bundle-Name" value="mptcp-load-balancing" />
+          <property key="Include-Resource" value="OSGI-INF/blueprint/shell-config.xml=$MODULE_DIR$/src/main/resources/OSGI-INF/blueprint/shell-config.xml" />
         </additionalProperties>
         <additionalJARContents />
       </configuration>
