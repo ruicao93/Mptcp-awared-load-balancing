@@ -88,41 +88,59 @@ public class LoadBalancePathManager implements LoadBalancePathService {
         Set<Path> pathSet = getOptimalPathSet(srcDeviceId, dstDeviceId);
         if (null == pathSet || pathSet.isEmpty()) return null;
         // 2. get initial connection path
-        Path initialPath = mptcpConnectionService.getMptcpConnectionByToken(token).getAllocatePath();
+        MptcpConnection initialConnection = mptcpConnectionService.getMptcpConnectionByToken(token);
+        Path initialPath = initialConnection.getAllocatePath();
+        Path subPath = initialConnection.getOptimalSubPath(pathSet);
+        return subPath;
         // 3. caculate conflict factor
-        List<Path> pathListOld = Lists.newArrayList(pathSet);
-        Map<Path, Long> pathLoadMap = new HashMap<>();
-        Map<Path, Double> pathConflictFactorMap = new HashMap<>();
-        for (Path path : pathListOld) {
-            pathLoadMap.put(path, getMaxLoadOnPath(path));
-            int conflictLinkNum = 0;
-            for (Link subLink : path.links()) {
-                for (Link initialLink : initialPath.links()) {
-                    if (subLink.equals(initialLink)) {
-                        ++conflictLinkNum;
-                    }
-                }
-            }
-            double conflictFactor = conflictLinkNum/Math.max(path.links().size(), initialPath.links().size());
-            pathConflictFactorMap.put(path, conflictFactor);
-        }
-        // 4. sort path by conflict factor, bw, hop
-        pathListOld.sort((p1, p2) ->{
-            if (pathConflictFactorMap.get(p1) < pathConflictFactorMap.get(p2)) {
-                return -1;
-            } else if (pathConflictFactorMap.get(p1) > pathConflictFactorMap.get(p2)) {
-                return 1;
-            } else {
-                if ( pathLoadMap.get(p1) < pathLoadMap.get(p2)) {
-                    return -1;
-                } else if (pathLoadMap.get(p1) > pathLoadMap.get(p2)) {
-                    return 1;
-                } else {
-                    return p1.links().size() - p2.links().size();
-                }
-            }
-        });
-        return pathListOld.get(0);
+//        List<Path> pathListOld = Lists.newArrayList(pathSet);
+//        Map<Path, Long> pathLoadMap = new HashMap<>();
+//        Map<Path, Double> pathConflictFactorMap = new HashMap<>();
+//        for (Path path : pathListOld) {
+//            pathLoadMap.put(path, getMaxLoadOnPath(path));
+//            int conflictLinkNum = 0;
+//            for (Link subLink : path.links()) {
+//                for (Link initialLink : initialPath.links()) {
+//                    if (subLink.equals(initialLink)) {
+//                        ++conflictLinkNum;
+//                    }
+//                }
+//            }
+//            double conflictFactor = conflictLinkNum/Math.max(path.links().size(), initialPath.links().size());
+//            pathConflictFactorMap.put(path, conflictFactor);
+//        }
+//        // 4. sort path by conflict factor, bw, hop
+//        pathListOld.sort((p1, p2) ->{
+//            if (pathConflictFactorMap.get(p1) < pathConflictFactorMap.get(p2)) {
+//                return -1;
+//            } else if (pathConflictFactorMap.get(p1) > pathConflictFactorMap.get(p2)) {
+//                return 1;
+//            } else {
+//                if ( pathLoadMap.get(p1) < pathLoadMap.get(p2)) {
+//                    return -1;
+//                } else if (pathLoadMap.get(p1) > pathLoadMap.get(p2)) {
+//                    return 1;
+//                } else {
+//                    return p1.links().size() - p2.links().size();
+//                }
+//            }
+//        });
+//        return pathListOld.get(0);
+
+//        int index = 0;
+//        for(int i = 0; i > pathListOld.size(); i++) {
+//            if (pathListOld.get(i).equals(initialPath)) {
+//                index = i;
+//                break;
+//            }
+//        }
+//        if (index == 0 || index >= pathListOld.size()) {
+//            return initialPath;
+//        }
+//        pathListOld.remove(index);
+//        Random random = new Random();
+//        return pathListOld.get(random.nextInt(pathListOld.size()));
+
     }
 
     @Override

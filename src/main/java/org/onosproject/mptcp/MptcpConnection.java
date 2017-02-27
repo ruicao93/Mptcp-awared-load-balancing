@@ -4,8 +4,7 @@ import org.onlab.packet.IpAddress;
 import org.onosproject.net.Path;
 import org.onosproject.net.flow.FlowId;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by cr on 16-12-20.
@@ -26,6 +25,7 @@ public class MptcpConnection {
     private FlowId lastHopFlowId;
 
     private List<MptcpSubFlow> subFlows = new ArrayList<>();
+    private Map<Path, Integer> subpathAllocateCountMap = new HashMap<>();
 
     public MptcpConnection(IpAddress primarySourceIp, IpAddress primaryDestinationIp, int primarySourcePort, int primaryDestinationPort) {
         this.primarySourceIp = primarySourceIp;
@@ -33,6 +33,38 @@ public class MptcpConnection {
         this.primarySourcePort = primarySourcePort;
         this.primaryDestinationPort = primaryDestinationPort;
     }
+
+    public Path getOptimalSubPath(Set<Path> pathSet) {
+        Path selectedPath = allocatePath;
+        int count = Integer.MAX_VALUE;
+        for (Path path : pathSet) {
+            if (path.equals(allocatePath)) {
+                continue;
+            }
+            if (getSubpathCount(path) < count) {
+                count = getSubpathCount(path);
+                selectedPath = path;
+            }
+        }
+        if (selectedPath != allocatePath) {
+            addSubPathCount(selectedPath);
+        }
+        return selectedPath;
+    }
+
+    private int getSubpathCount(Path path) {
+        return subpathAllocateCountMap.containsKey(path) ? subpathAllocateCountMap.get(path) : 0;
+    }
+
+    private void addSubPathCount(Path path) {
+        if (!subpathAllocateCountMap.containsKey(path)) {
+            subpathAllocateCountMap.put(path, 0);
+        }
+        int count = getSubpathCount(path);
+        subpathAllocateCountMap.put(path, ++count);
+    }
+
+
 
     public IpAddress getPrimarySourceIp() {
         return primarySourceIp;
